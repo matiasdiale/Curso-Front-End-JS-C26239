@@ -1,0 +1,49 @@
+/* ==========================================
+   TIPOGRAFÍAS DE GOOGLE FONTS APLICADAS
+   ========================================== */
+body {
+    font-family: 'Poppins', sans-serif; /* Fuente principal de texto */
+    color: #333;
+    line-height: 1.6;
+    background-color: #fdfbf7;
+}
+
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif; /* Fuente elegante para títulos */
+}
+
+/* Espaciado para los iconos dentro del menú y botones */
+.main-nav i,
+.btn i,
+.btn-submit i,
+.form-group label i {
+    margin-right: 6px;
+}
+
+/* ==========================================
+   ESTRELLAS DE RESEÑA
+   ========================================== */
+.rating {
+    color: #f39c12; /* Color dorado para las estrellas de FontAwesome */
+    margin-bottom: 0.5rem;
+}
+
+/* ==========================================
+   REDES SOCIALES EN EL FOOTER
+   ========================================== */
+.social-links {
+    margin-bottom: 1rem;
+}
+
+.social-links a {
+    color: #e0a96d;
+    font-size: 1.5rem;
+    margin: 0 10px;
+    transition: transform 0.3s ease, color 0.3s ease;
+    display: inline-block;
+}
+
+.social-links a:hover {
+    color: #ffffff;
+    transform: translateY(-3px);
+}
