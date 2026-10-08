@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentoTech Store - Inspector Interactivos con Explicaciones CSS</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/style.css" id="estilos-base">
+
+<style>
+  /* Panel de control */
+  #panel-css-control {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: #111827;
+    color: #f9fafb;
+    border: 2px solid #374151;
+    border-radius: 10px;
+    padding: 15px;
+    z-index: 99999;
+    width: 330px;
+    max-height: 85vh;
+    overflow-y: auto;
+    font-family: system-ui, -apple-system, sans-serif;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+  }
+  #panel-css-control h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #ffd34d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-acciones {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .panel-acciones button {
+    flex: 1;
+    background: #374151;
+    color: #fff;
+    border: none;
+    padding: 5px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .panel-acciones button:hover {
+    background: #4b5563;
+  }
+  #panel-css-control .grupo-css {
+    margin-bottom: 12px;
+    border-top: 1px solid #374151;
+    padding-top: 8px;
+  }
+  #panel-css-control .grupo-css h4 {
+    margin: 0 0 6px 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #9ca3af;
+  }
+  .opcion-css {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 4px 0;
+  }
+  .opcion-css label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: monospace;
+    width: 100%;
+  }
+  #panel-css-control input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: #ffd34d;
+  }
+
+  /* TARJETA / CARDCITO EXPLICATIVO (TOOLTIP) */
+  .card-explicacion {
+    display: none;
+    position: fixed;
+    right: 360px;
+    width: 280px;
+    background: #1f2937;
+    border: 1px solid #4b5563;
+    border-left: 4px solid #ffd34d;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    z-index: 100000;
+    pointer-events: none;
+  }
+  .card-explicacion .titulo-card {
+    font-size: 13px;
+    font-weight: bold;
+    color: #ffd34d;
+    margin-bottom: 6px;
+    font-family: monospace;
+  }
+  .card-explicacion .desc-card {
+    font-size: 12px;
+    color: #e5e7eb;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .card-explicacion pre {
+    background: #111827;
+    color: #34d399;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0;
+    font-family: monospace;
+  }
+</style>
+</head>
+<body>
+
+<!-- TARJETA FLOTANTE EXPLICATIVA -->
+<div id="card-tooltip" class="card-explicacion">
+  <div id="card-titulo" class="titulo-card">.selector</div>
+  <div id="card-desc" class="desc-card">Explicación breve de la regla.</div>
+  <pre><code id="card-codigo">/* Código CSS */</code></pre>
+</div>
+
+<!-- PANEL DE CONTROL CSS -->
+<aside id="panel-css-control">
+  <h3>
+    <i class="fa-solid fa-sliders"></i> Inspector CSS
+    <button onclick="togglePanelVisibilidad()" id="btn-toggle-panel">Minimizar</button>
+  </h3>
+
+  <div id="panel-contenido">
+    <div class="panel-acciones">
+      <button onclick="toggleTodos(true)">Marcar Todos</button>
+      <button onclick="toggleTodos(false)">Desmarcar Todos</button>
+    </div>
+
+    <!-- UNIVERSALES Y BASE -->
+    <div class="grupo-css">
+      <h4>Universales y Base</h4>
+      <div class="opcion-css" data-selector="*" data-desc="Reseteo global: Quita los márgenes por defecto del navegador y calcula el tamaño exacto de los bordes/cajas." data-codigo="* { margin: 0; padding: 0; box-sizing: border-box; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('*', this.checked)"> *</label>
+      </div>
+      <div class="opcion-css" data-selector="body" data-desc="Define la fuente principal del sitio, la altura de las líneas del texto y el color de fondo claro." data-codigo="body { font-family: Arial, sans-serif; line-height: 1.5; color: #222; background: #FAFAFA; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('body', this.checked)"> body</label>
+      </div>
+      <div class="opcion-css" data-selector="main" data-desc="Pone un espaciado interior en la parte inferior para separar el contenido principal del footer." data-codigo="main { padding-bottom: 50px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('main', this.checked)"> main</label>
+      </div>
+      <div class="opcion-css" data-selector=".contenedor" data-desc="Centra el contenido en pantalla y limita el ancho máximo a 1100px." data-codigo=".contenedor { max-width: 1100px; margin: 0 auto; padding: 0 20px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.contenedor', this.checked)"> .contenedor</label>
+      </div>
+      <div class="opcion-css" data-selector=".titulo-seccion" data-desc="Centra los títulos de cada sección y les asigna el tamaño de fuente y márgenes." data-codigo=".titulo-seccion { text-align: center; margin: 50px 0 30px; font-size: 28px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.titulo-seccion', this.checked)"> .titulo-seccion</label>
+      </div>
+    </div>
+
+    <!-- HEADER Y NAVEGACIÓN -->
+    <div class="grupo-css">
+      <h4>Header y Menú</h4>
+      <div class="opcion-css" data-selector="header" data-desc="Aplica el fondo verde oscuro al encabezado principal y el texto blanco." data-codigo="header { background: #2F8F83; color: white; padding: 15px 0; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('header', this.checked)"> header</label>
+      </div>
+      <div class="opcion-css" data-selector=".barra-nav" data-desc="Usa Flexbox para alinear el logo a la izquierda y el menú a la derecha." data-codigo=".barra-nav { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.barra-nav', this.checked)"> .barra-nav</label>
+      </div>
+      <div class="opcion-css" data-selector=".logo" data-desc="Aumenta el tamaño del texto del logo a 24px y lo pone en negrita." data-codigo=".logo { font-size: 24px; font-weight: bold; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.logo', this.checked)"> .logo</label>
+      </div>
+      <div class="opcion-css" data-selector=".logo span" data-desc="Pinta únicamente la palabra 'Tech' dentro del logo en color amarillo." data-codigo=".logo span { color: #FFD34D; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.logo span', this.checked)"> .logo span</label>
+      </div>
+      <div class="opcion-css" data-selector=".menu" data-desc="Pone los enlaces del menú en una fila horizontal usando Flexbox y saca los puntos." data-codigo=".menu { display: flex; gap: 20px; list-style: none; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.menu', this.checked)"> .menu</label>
+      </div>
+      <div class="opcion-css" data-selector=".menu a" data-desc="Pinta los textos de los enlaces del menú en blanco y les quita el subrayado." data-codigo=".menu a { color: white; text-decoration: none; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.menu a', this.checked)"> .menu a</label>
+      </div>
+      <div class="opcion-css" data-selector=".menu a:hover" data-desc="Cambia el texto del enlace a color amarillo cuando le pasás el cursor." data-codigo=".menu a:hover { color: #FFD34D; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.menu a:hover', this.checked)"> .menu a:hover</label>
+      </div>
+    </div>
+
+    <!-- HERO / BANNER -->
+    <div class="grupo-css">
+      <h4>Hero / Banner</h4>
+      <div class="opcion-css" data-selector=".hero" data-desc="Aplica el fondo verde medio, centra el contenido y le da un padding de 60px." data-codigo=".hero { background: #1F6F66; color: white; text-align: center; padding: 60px 20px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.hero', this.checked)"> .hero</label>
+      </div>
+      <div class="opcion-css" data-selector=".hero h1" data-desc="Define el tamaño del título principal de la portada en 36px." data-codigo=".hero h1 { font-size: 36px; margin-bottom: 10px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.hero h1', this.checked)"> .hero h1</label>
+      </div>
+      <div class="opcion-css" data-selector=".boton" data-desc="Le da formato de botón al enlace de la portada: fondo amarillo, esquinas redondeadas y texto oscuro." data-codigo=".boton { display: inline-block; margin-top: 20px; background: #FFD34D; color: #222; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.boton', this.checked)"> .boton</label>
+      </div>
+      <div class="opcion-css" data-selector=".boton:hover" data-desc="Oscurece un poco el amarillo del botón al pasar el mouse por encima." data-codigo=".boton:hover { background: #FFC107; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.boton:hover', this.checked)"> .boton:hover</label>
+      </div>
+    </div>
+
+    <!-- PRODUCTOS Y CARDS -->
+    <div class="grupo-css">
+      <h4>Productos y Cards</h4>
+      <div class="opcion-css" data-selector=".grilla-productos" data-desc="Organiza las tarjetas de productos en filas flexibles que se bajan si no entran." data-codigo=".grilla-productos { display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.grilla-productos', this.checked)"> .grilla-productos</label>
+      </div>
+      <div class="opcion-css" data-selector=".card" data-desc="Estructura la tarjeta con un ancho base de 320px, fondo blanco, bordes y esquinas redondeadas." data-codigo=".card { flex: 0 1 320px; background: white; border: 1px solid #E0E0E0; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.card', this.checked)"> .card</label>
+      </div>
+      <div class="opcion-css" data-selector=".card:hover" data-desc="Agrega una sombra flotante suave a la tarjeta cuando pasás el mouse encima." data-codigo=".card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.card:hover', this.checked)"> .card:hover</label>
+      </div>
+      <div class="opcion-css" data-selector=".card img" data-desc="Ajusta la imagen del producto para ocupar el 100% del ancho y recortarse sin deformarse a 240px de alto." data-codigo=".card img { width: 100%; height: 240px; object-fit: cover; display: block; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.card img', this.checked)"> .card img</label>
+      </div>
+      <div class="opcion-css" data-selector=".card-info" data-desc="Crea la columna con el texto de la tarjeta, título, precio y botón ordenados." data-codigo=".card-info { padding: 15px; display: flex; flex-direction: column; gap: 8px; flex: 1; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.card-info', this.checked)"> .card-info</label>
+      </div>
+      <div class="opcion-css" data-selector=".categoria" data-desc="Pone en mayúsculas la categoría con letras pequeñas y tono verde." data-codigo=".categoria { font-size: 12px; text-transform: uppercase; color: #2F8F83; letter-spacing: 1px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.categoria', this.checked)"> .categoria</label>
+      </div>
+      <div class="opcion-css" data-selector=".card h3" data-desc="Pone el tamaño de fuente para el nombre del producto." data-codigo=".card h3 { font-size: 18px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.card h3', this.checked)"> .card h3</label>
+      </div>
+      <div class="opcion-css" data-selector=".precio" data-desc="Destaca el precio en negrita y usa margin-top: auto para empujarlo al final de la tarjeta." data-codigo=".precio { font-size: 20px; font-weight: bold; color: #1F6F66; margin-top: auto; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.precio', this.checked)"> .precio</label>
+      </div>
+      <div class="opcion-css" data-selector=".card button" data-desc="Otorga los estilos verdes y esquinas redondeadas al botón de compra." data-codigo=".card button { background: #2F8F83; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 14px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.card button', this.checked)"> .card button</label>
+      </div>
+      <div class="opcion-css" data-selector=".card button:hover" data-desc="Cambia el tono del botón de compra a verde oscuro al interactuar." data-codigo=".card button:hover { background: #1F6F66; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.card button:hover', this.checked)"> .card button:hover</label>
+      </div>
+    </div>
+
+    <!-- CONTACTO Y MAPA -->
+    <div class="grupo-css">
+      <h4>Contacto y Mapa</h4>
+      <div class="opcion-css" data-selector=".bloque-contacto" data-desc="Separa el formulario y el mapa de la sección de contacto en 2 columnas." data-codigo=".bloque-contacto { display: flex; flex-wrap: wrap; gap: 30px; margin-top: 20px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.bloque-contacto', this.checked)"> .bloque-contacto</label>
+      </div>
+      <div class="opcion-css" data-selector=".datos-contacto" data-desc="Columna de la izquierda que alberga la dirección y números telefónicos." data-codigo=".datos-contacto { flex: 1 1 300px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.datos-contacto', this.checked)"> .datos-contacto</label>
+      </div>
+      <div class="opcion-css" data-selector=".mapa" data-desc="Columna de la derecha que sostiene el contenedor del mapa dinámico." data-codigo=".mapa { flex: 1 1 300px; min-height: 250px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.mapa', this.checked)"> .mapa</label>
+      </div>
+      <div class="opcion-css" data-selector=".mapa iframe" data-desc="Ajusta el marco del mapa de Google Maps al 100% del contenedor." data-codigo=".mapa iframe { width: 100%; height: 100%; min-height: 250px; border: 0; border-radius: 8px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.mapa iframe', this.checked)"> .mapa iframe</label>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="grupo-css">
+      <h4>Footer</h4>
+      <div class="opcion-css" data-selector="footer" data-desc="Aplica el fondo oscuro final de la página y el texto gris claro." data-codigo="footer { background: #222; color: #DDD; padding: 40px 0 20px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('footer', this.checked)"> footer</label>
+      </div>
+      <div class="opcion-css" data-selector=".footer-columnas" data-desc="Alinea las 3 columnas del pie de página con Flexbox distribuyendo el espacio libre." data-codigo=".footer-columnas { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.footer-columnas', this.checked)"> .footer-columnas</label>
+      </div>
+      <div class="opcion-css" data-selector=".columna" data-desc="Le indica a cada columna del pie de página que mantenga un tamaño mínimo de 250px." data-codigo=".columna { flex: 1 1 250px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.columna', this.checked)"> .columna</label>
+      </div>
+      <div class="opcion-css" data-selector=".redes" data-desc="Ordena los botones de redes sociales en fila con separación usando Flexbox." data-codigo=".redes { display: flex; gap: 12px; margin-top: 10px; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.redes', this.checked)"> .redes</label>
+      </div>
+      <div class="opcion-css" data-selector=".copyright" data-desc="Centra el texto del copyright en el fondo del footer y le aplica la nueva tipografía y color." data-codigo=".copyright { text-align: center; margin-top: 20px; color: #FFD34D; font-family: 'Courier New', monospace; font-weight: bold; }">
+        <label><input type="checkbox" checked onchange="toggleRegla('.copyright', this.checked)"> .copyright</label>
+      </div>
+    </div>
+
+  </div>
+</aside>
+
+<!-- CONTENIDO HTML -->
+<header>
+  <div class="contenedor barra-nav">
+    <div class="logo">Talento<span>Tech</span> Store</div>
+    <nav>
+      <ul class="menu">
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#productos">Productos</a></li>
+        <li><a href="#">Ofertas</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+        <li><a href="#"><i class="fa-solid fa-cart-shopping"></i> Carrito</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Nueva temporada 2026</h1>
+    <p>Ropa urbana para programar cómodo. Envío gratis a todo el país.</p>
+    <a href="#productos" class="boton">Ver productos</a>
+  </section>
+
+  <section id="productos" class="contenedor">
+    <h2 class="titulo-seccion">Nuestros productos</h2>
+    <div class="grilla-productos">
+
+      <article class="card">
+        <img src="https://placehold.co/400x300/2F8F83/FFFFFF?text=Remera" alt="Remera oversize verde">
+        <div class="card-info">
+          <span class="categoria">Remeras</span>
+          <h3>Remera Oversize Hola Mundo</h3>
+          <p>100% algodón peinado. Talles S al XXL.</p>
+          <span class="precio">$18.900</span>
+          <button><i class="fa-solid fa-cart-plus"></i> Agregar al carrito</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="https://placehold.co/400x300/1F6F66/FFFFFF?text=Buzo" alt="Buzo con capucha">
+        <div class="card-info">
+          <span class="categoria">Buzos</span>
+          <h3>Buzo Canguro Dev Mode</h3>
+          <p>Frisa invisible, bolsillo canguro y cordón ajustable.</p>
+          <span class="precio">$42.500</span>
+          <button><i class="fa-solid fa-cart-plus"></i> Agregar al carrito</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="https://placehold.co/400x300/44618C/FFFFFF?text=Jean" alt="Jean recto azul">
+        <div class="card-info">
+          <span class="categoria">Pantalones</span>
+          <h3>Jean Recto Clásico</h3>
+          <p>Denim rígido azul, cinco bolsillos, corte recto.</p>
+          <span class="precio">$55.000</span>
+          <button><i class="fa-solid fa-cart-plus"></i> Agregar al carrito</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="https://placehold.co/400x300/FFD34D/222222?text=Campera" alt="Campera rompeviento amarilla">
+        <div class="card-info">
+          <span class="categoria">Camperas</span>
+          <h3>Campera Rompeviento</h3>
+          <p>Impermeable, liviana y con capucha desmontable.</p>
+          <span class="precio">$68.900</span>
+          <button><i class="fa-solid fa-cart-plus"></i> Agregar al carrito</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="https://placehold.co/400x300/8A6BBE/FFFFFF?text=Zapatillas" alt="Zapatillas urbanas">
+        <div class="card-info">
+          <span class="categoria">Calzado</span>
+          <h3>Zapatillas Urbanas Sneak</h3>
+          <p>Suela de goma antideslizante. Del 36 al 45.</p>
+          <span class="precio">$74.200</span>
+          <button><i class="fa-solid fa-cart-plus"></i> Agregar al carrito</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="https://placehold.co/400x300/C94F4F/FFFFFF?text=Gorra" alt="Gorra roja con visera">
+        <div class="card-info">
+          <span class="categoria">Accesorios</span>
+          <h3>Gorra Trucker 404</h3>
+          <p>Visera curva, malla trasera y cierre regulable.</p>
+          <span class="precio">$12.300</span>
+          <button><i class="fa-solid fa-cart-plus"></i> Agregar al carrito</button>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="contacto" class="contenedor">
+    <h2 class="titulo-seccion">Donde encontrarnos</h2>
+    <div class="bloque-contacto">
+      <div class="datos-contacto">
+        <h3>Local central</h3>
+        <ul>
+          <li><i class="fa-solid fa-location-dot"></i> Av. 9 de Julio s/n, Obelisco - CABA</li>
+          <li><i class="fa-solid fa-clock"></i> Lunes a sabados de 10 a 20 hs</li>
+        </ul>
+
+        <h3>Telefonos</h3>
+        <ul>
+          <li><i class="fa-solid fa-phone"></i> Ventas: <a href="tel:+541145550001">+54 11 4555-0001</a></li>
+          <li><i class="fa-solid fa-headset"></i> Posventa: <a href="tel:+541145550002">+54 11 4555-0002</a></li>
+          <li><i class="fa-brands fa-whatsapp"></i> WhatsApp: <a href="tel:+5491145550003">+54 9 11 4555-0003</a></li>
+          <li><i class="fa-solid fa-envelope"></i> <a href="mailto:info@talentotech.com.ar">info@talentotech.com.ar</a></li>
+        </ul>
+        <p class="nota">* Datos de contacto ficticios, solo de ejemplo.</p>
+      </div>
+
+      <div class="mapa">
+        <iframe
+          src="https://www.google.com/maps?q=Obelisco%20de%20Buenos%20Aires&z=16&output=embed"
+          title="Mapa del Obelisco de Buenos Aires"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="contenedor footer-columnas">
+    <div class="columna">
+      <h4>TalentoTech Store</h4>
+      <p>Tienda de ropa creada como ejemplo para el curso de Desarrollo Web de TalentoTech.</p>
+    </div>
+
+    <div class="columna">
+      <h4>Contacto</h4>
+      <ul>
+        <li><i class="fa-solid fa-envelope"></i> info@talentotech.com.ar</li>
+        <li><i class="fa-solid fa-phone"></i> +54 11 4555-0001</li>
+        <li><i class="fa-brands fa-whatsapp"></i> +54 9 11 4555-0003</li>
+        <li><i class="fa-solid fa-location-dot"></i> Obelisco, CABA - Argentina</li>
+      </ul>
+    </div>
+
+    <div class="columna">
+      <h4>Seguinos</h4>
+      <p>@talentotech</p>
+      <div class="redes">
+        <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+        <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="#" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <p class="copyright">&copy; 2026 TalentoTech Store </p>
+</footer>
+
+<!-- SCRIPT DE LÓGICA Y TOOLTIP -->
+<script>
+  const reglasDesactivadas = new Map();
+
+  function toggleRegla(selectorTarget, activar) {
+    const hojaEstilos = Array.from(document.styleSheets).find(sheet => sheet.href && sheet.href.includes('style.css'));
+    if (!hojaEstilos) return;
+
+    try {
+      const reglas = hojaEstilos.cssRules || hojaEstilos.rules;
+      for (let i = 0; i < reglas.length; i++) {
+        const regla = reglas[i];
+        if (regla.selectorText && regla.selectorText.trim() === selectorTarget.trim()) {
+          if (!activar) {
+            reglasDesactivadas.set(regla, regla.style.cssText);
+            regla.style.cssText = '';
+          } else {
+            if (reglasDesactivadas.has(regla)) {
+              regla.style.cssText = reglasDesactivadas.get(regla);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Error al modificar estilos:', e);
+    }
+  }
+
+  function toggleTodos(estado) {
+    const checkboxes = document.querySelectorAll('#panel-contenido input[type="checkbox"]');
+    checkboxes.forEach(chk => {
+      if (chk.checked !== estado) {
+        chk.checked = estado;
+        const selector = chk.closest('.opcion-css').getAttribute('data-selector');
+        toggleRegla(selector, estado);
+      }
+    });
+  }
+
+  function togglePanelVisibilidad() {
+    const contenido = document.getElementById('panel-contenido');
+    const btn = document.getElementById('btn-toggle-panel');
+    if (contenido.style.display === 'none') {
+      contenido.style.display = 'block';
+      btn.innerText = 'Minimizar';
+    } else {
+      contenido.style.display = 'none';
+      btn.innerText = 'Maximizar';
+    }
+  }
+
+  // MANEJO DEL TOOLTIP / CARDCITO EXPLICATIVO AL PASAR EL MOUSE
+  const cardTooltip = document.getElementById('card-tooltip');
+  const cardTitulo = document.getElementById('card-titulo');
+  const cardDesc = document.getElementById('card-desc');
+  const cardCodigo = document.getElementById('card-codigo');
+
+  document.querySelectorAll('.opcion-css').forEach(item => {
+    item.addEventListener('mouseenter', (e) => {
+      const selector = item.getAttribute('data-selector');
+      const desc = item.getAttribute('data-desc');
+      const codigo = item.getAttribute('data-codigo');
+
+      cardTitulo.innerText = selector;
+      cardDesc.innerText = desc;
+      cardCodigo.innerText = codigo;
+
+      const rect = item.getBoundingClientRect();
+      cardTooltip.style.top = `${rect.top}px`;
+      cardTooltip.style.display = 'block';
+    });
+
+    item.addEventListener('mouseleave', () => {
+      cardTooltip.style.display = 'none';
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,294 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;   /* el padding NO agranda la caja */
+  }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+    color: #222;
+    background: #FAFAFA;
+  }
+
+/* Clase reutilizable: centra el contenido y le pone un ancho maximo */
+  .contenedor {
+    max-width: 1100px;
+    margin: 0 auto;          /* 0 arriba/abajo, auto a los costados = centrado */
+    padding: 0 20px;
+  }
+
+header {
+    background: #2F8F83;
+    color: white;
+    padding: 15px 0;
+  }
+
+.barra-nav {
+    display: flex;
+    justify-content: space-between;  /* separa logo y menu a los extremos */
+    align-items: center;             /* los alinea a la misma altura */
+    flex-wrap: wrap;                 /* en pantallas chicas bajan de linea */
+    gap: 15px;
+  }
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+/*Selector descendiente - el estilo se aplica a los elementos span que están dentro
+del elemento logo*/
+.logo span {
+    color: #FFD34D;          /* pintamos solo una parte del nombre */
+  }
+
+
+.menu {
+    display: flex;
+    gap: 20px;
+    list-style: none;        /* saca los puntitos de la lista */
+  }
+
+
+.menu a {
+    color: white;
+    text-decoration: none;
+  }
+
+.menu a:hover {
+    color: #FFD34D;
+  }
+
+.hero {
+    background: #1F6F66;
+    color: white;
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+.hero h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+
+.boton {
+    display: inline-block;
+    margin-top: 20px;
+    background: #FFD34D;
+    color: #222;
+    padding: 12px 28px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+.boton:hover {
+    background: #FFC107;
+  }
+
+main {
+    padding-bottom: 50px;
+  }
+
+.titulo-seccion {
+    text-align: center;
+    margin: 50px 0 30px;
+    font-size: 28px;
+  }
+
+.grilla-productos {
+    display: flex;
+    flex-wrap: wrap;          /* si no entran, pasan a la fila de abajo */
+    gap: 25px;                /* separacion entre cards */
+    justify-content: center;
+  }
+
+.card {
+    flex: 0 1 320px;
+    background: white;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    overflow: hidden;         /* recorta la imagen a las esquinas redondeadas */
+    display: flex;
+    flex-direction: column;   /* imagen arriba, texto abajo (en columna) */
+  }
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+.card img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;        /* la imagen se recorta sin deformarse */
+    display: block;
+  }
+
+.card-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;                  /* ocupa el espacio sobrante: cards parejas */
+  }
+
+.categoria {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #2F8F83;
+    letter-spacing: 1px;
+  }
+
+.card h3 {
+    font-size: 18px;
+  }
+
+.precio {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1F6F66;
+    margin-top: auto;         /* empuja el precio al fondo de la card */
+  }
+
+.card button {
+    background: #2F8F83;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+.card button:hover {
+    background: #1F6F66;
+  }
+
+footer {
+    background: #222;
+    color: #DDD;
+    padding: 40px 0 20px;
+  }
+
+.footer-columnas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+  }
+
+.columna {
+    flex: 1 1 250px;          /* crece, se achica, base 250px */
+  }
+
+.columna h4 {
+    color: white;
+    margin-bottom: 12px;
+  }
+
+.columna ul {
+    list-style: none;
+  }
+
+
+
+/* ==================== CONTACTO Y MAPA ==================== */
+.bloque-contacto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.datos-contacto {
+    flex: 1 1 300px;
+}
+
+.datos-contacto h3 {
+    margin: 15px 0 10px;
+    color: #1F6F66;
+}
+
+.datos-contacto ul {
+    list-style: none;
+    margin-bottom: 15px;
+}
+
+.datos-contacto li {
+    margin-bottom: 8px;
+}
+
+.datos-contacto li i {
+    color: #2F8F83;
+    margin-right: 8px;
+}
+
+.datos-contacto a {
+    color: #2F8F83;
+    text-decoration: none;
+}
+
+.datos-contacto a:hover {
+    text-decoration: underline;
+}
+
+.nota {
+    font-size: 12px;
+    color: #777;
+    font-style: italic;
+}
+
+.mapa {
+    flex: 1 1 300px;
+    min-height: 250px;
+}
+
+.mapa iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 250px;
+    border: 0;
+    border-radius: 8px;
+}
+
+/* Cambia el color base de los íconos */
+.redes a {
+    color: #FFD34D;            /* Color amarillo de TalentoTech */
+    font-size: 20px;           /* Tamaño del ícono */
+    text-decoration: none;
+    transition: color 0.3s;    /* Transición suave al pasar el cursor */
+}
+
+/* Color al pasar el mouse por arriba */
+.redes a:hover {
+    color: #2F8F83;            /* Cambia a verde al hacer hover */
+}
+
+.copyright {
+    text-align: left;
+    margin-top: 30px;
+    padding: 20px;
+    padding-top: 20px;
+    /*border-top: 1px solid #333; /* Línea fina arriba */*/
+    color: #888;               /* Gris suave */
+    font-size: 14px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
